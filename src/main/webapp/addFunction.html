@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>新增权限</title>
+    <link rel="stylesheet" type="text/css" href="/css/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/css/demo/demo.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+</head>
+<body>
+<div align="center">
+<div style="margin:20px 0;"></div>
+<div class="easyui-panel" title="新增权限" style="width:400px">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff" method="post">
+            <table cellpadding="5">
+                <tr>
+                    <td>功能编码:</td>
+                    <td><input class="easyui-textbox" type="text" name="fcode" data-options="required:true"></input></td>
+                </tr>
+                <tr>
+                    <td>功能名称:</td>
+                    <td><input class="easyui-textbox" type="text" name="fname" data-options="required:true"></input></td>
+                </tr>
+                <tr>
+                    <td>功能链接:</td>
+                    <td><input class="easyui-textbox" type="text" name="furl" data-options="required:true"></input></td>
+                </tr>
+                <tr>
+                    <td>功能级别:</td>
+                    <td>
+                        <input id="cc1" name="flevel" class="easyui-combobox" data-options="
+    valueField: 'id',
+    textField: 'text',
+    data:[{
+			id: '1',
+			text: '一级功能'
+		},{
+			id: '2',
+			text: '二级功能'
+		},],
+    onSelect: function(rec){
+    if(rec.id==2){
+         $('#firstFunction').removeAttr('style');
+          var url = '/function/getFirstFunctions';
+          $('#cc2').combobox('reload', url);
+    }else{
+        $('#firstFunction').attr('style','display:none');
+    }
+    }">
+                        <div id="firstFunction" style="display: none">
+                        <input id="cc2" class="easyui-combobox" name="parentid" data-options="valueField:'fid',textField:'fname',label:'一级功能：'">
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+        </form>
+        <div style="text-align:center;padding:5px">
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">新增</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">取消</a>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    function submitForm(){
+        $('#ff').form('submit', {
+            url:"/function/addFunction",
+            success:function(data){
+                var obj = eval("("+data+")");
+                alert(obj.message);
+                if(obj.success){
+                        window.location.href="/functionList.html";
+                }else{
+                    window.location.reload();
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#ff').form('clear');
+    }
+</script>
+</body>
+</html>

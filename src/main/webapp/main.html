@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>功能页面</title>
+    <link rel="stylesheet" type="text/css" href="/css/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/css/demo/demo.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+</head>
+<body>
+
+
+<div style="margin:20px 0;"></div>
+<div align="center">
+<div class="easyui-layout" style="width:1100px;height:700px;">
+    <div data-options="region:'north'"  style="height:50px">
+        <h2 align="center" >办公管理系统</h2>
+    </div>
+    <div data-options="region:'south',split:true" style="height:50px;"></div>
+    <div data-options="region:'east',split:true" title="当前用户" style="width:100px;">
+         <h2 id="currentEmployee"></h2>
+         <a href="/employee/loginOut">退出</a>
+    </div>
+
+    <div data-options="region:'west',split:true" title="功能主菜单" style="width:160px;">
+        <ul id="tt"></ul>
+
+    </div>
+    <div data-options="region:'center',title:'功能主页面',iconCls:'icon-ok'">
+        <iframe id="functionFurl" src="/image/default.jpg" width="100%"  height="100%"></iframe>
+    </div>
+</div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        //发起Ajax请求获取要修改的数据展示到页面
+        $.ajax({
+            type:"POST",
+            url:"/employee/getCurrentEmployee",
+            success:function (data) {
+               $('#currentEmployee').text(data.ename)
+            }
+        });
+    });
+    $('#tt').tree({
+        url:'function/getCurrentEmployeeFunctions',
+        onClick:function (node) {
+
+          $('#functionFurl').attr("src",node.furl);
+        }
+        
+    });
+</script>
+</body>
+</html>

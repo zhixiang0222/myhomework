@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>新增角色页面</title>
+    <link rel="stylesheet" type="text/css" href="/css/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/css/demo/demo.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+</head>
+<body>
+<div align="center">
+    <form id="ff" method="post">
+        <table cellpadding="5">
+            <tr>
+                <td>角色编码:</td>
+                <td><input class="easyui-textbox" type="text" name="rcode" data-options="required:true"></input></td>
+            </tr>
+            <tr>
+                <td>角色名称:</td>
+                <td><input class="easyui-textbox" type="text" name="rname" data-options="required:true"></input></td>
+            </tr>
+
+            <tr>
+                <td>一级功能:</td>
+                <td>
+                    <input id="cc1" name="fids" class="easyui-combobox" data-options="
+    valueField: 'fid',
+    textField: 'fname',
+    url:'/function/getFirstFunctions',
+    multiple:true,
+    onSelect: function(rec){
+    var url='/function/findFunctionsByParentid?parentid='+rec.fid;
+    $('#cc2').combobox('reload', url);
+
+    }">
+                    <input id="cc2" class="easyui-combobox" name="fids" data-options="valueField:'fid',textField:'fname',label:'二级功能：',multiple:true">
+                </td>
+            </tr>
+        </table>
+            </form>
+            <div style="text-align:center;padding:5px">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">新增</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitForm(){
+        $('#ff').form('submit', {
+            url:"/role/addRole",
+            success:function(data){
+                var obj = eval("("+data+")");
+                alert(obj.message);
+                if(obj.success){
+                    window.location.href="/roleList.html";
+                }else{
+                    window.location.reload();
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#ff').form('clear');
+    }
+</script>
+</body>
+</html>

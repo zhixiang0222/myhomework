@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>修改角色页面</title>
+    <link rel="stylesheet" type="text/css" href="/css/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/css/demo/demo.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+</head>
+<body>
+<div align="center">
+    <form id="ff" method="post">
+        <input type="hidden" name="rid" id="rid">
+        <table cellpadding="5">
+            <tr>
+                <td>角色编码:</td>
+                <td><input id="rcode" class="easyui-textbox" type="text" name="rcode" data-options="required:true"></input></td>
+            </tr>
+            <tr>
+                <td>角色名称:</td>
+                <td><input id="rname" class="easyui-textbox" type="text" name="rname" data-options="required:true"></input></td>
+            </tr>
+            <tr>
+                <td>角色功能:</td>
+                <td>
+                    <ul id="tt"></ul>
+                </td>
+            </tr>
+
+        </table>
+    </form>
+    <div style="text-align:center;padding:5px">
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">取消</a>
+    </div>
+</div>
+</div>
+</div>
+<script>
+    $(document).ready(function () {
+        //发起Ajax请求获取要修改的数据展示到页面
+        $.ajax({
+            type:"POST",
+            url:"/role/findRole",
+            success:function (data) {
+                $('#rid').val(data.rid);
+                $('#rcode').textbox('setValue',data.rcode);
+                $('#rname').textbox('setValue',data.rname);
+                $('#tt').tree({
+                    url:'/role/roleFunctions',
+                    checkbox:true
+                });
+            }
+        });
+    });
+
+    function submitForm(){
+        //获取选中和未决定状态节点
+        var nodes = $('#tt').tree('getChecked',['checked','indeterminate']);
+        var fids="";
+        for (var i=0;i<nodes.length;i++){
+            fids+=nodes[i].id+","
+        }
+        $('#ff').form('submit', {
+            url:"/role/updateRole?fids="+fids,
+            success:function(data){
+                var obj = eval("("+data+")");
+                alert(obj.message);
+                if(obj.success){
+                    window.location.href="/roleList.html";
+                }else{
+                    window.location.reload();
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#ff').form('clear');
+    }
+</script>
+</body>
+</html>

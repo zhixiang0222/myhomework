@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>修改员工页面</title>
+    <link rel="stylesheet" type="text/css" href="/css/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/css/demo/demo.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+</head>
+<body>
+<div align="center">
+    <form id="ff" method="post">
+        <input name="eid" id="eid" type="hidden">
+        <table cellpadding="5">
+            <tr>
+                <td>员工姓名:</td>
+                <td><input id="ename" class="easyui-textbox" type="text" name="ename" data-options="required:true"></input></td>
+            </tr>
+            <tr>
+                <td>员工性别:</td>
+                <td>男:<input id="esex1" type="radio" value="0" name="esex">
+                    女:<input id="esex2" type="radio" value="1" name="esex"></td>
+            </tr>
+            <tr>
+                <td>员工年龄:</td>
+                <td><input id="age" class="easyui-textbox" type="text" name="age" data-options="required:true"></input></td>
+            </tr>
+            <tr>
+                <td>联系电话:</td>
+                <td><input id="phonenumber" class="easyui-textbox" type="text" name="phonenumber" data-options="required:true"></input></td>
+            </tr>
+            <tr>
+                <td>入职日期:</td>
+                <td><input id="hireDate" class="easyui-datebox" type="text" name="hireDate" data-options="required:true,formatter:myformatter,parser:myparser"></input></td>
+            </tr>
+            <tr>
+                <td>工号:</td>
+                <td><input id="jobnumber" class="easyui-textbox" type="text" name="jobnumber" data-options="required:true"></input></td>
+            </tr>
+            <tr>
+                <td>员工角色:</td>
+                <td>
+                    <input id="cc1" name="rids" class="easyui-combobox" data-options="
+    valueField: 'rid',
+    textField: 'rname',
+    url:'role/getAllRoles',
+    multiple:true
+    ">
+
+                </td>
+            </tr>
+
+        </table>
+    </form>
+    <div style="text-align:center;padding:5px">
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">修改</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">取消</a>
+    </div>
+</div>
+</div>
+</div>
+<script>
+    $(document).ready(function () {
+        //发起Ajax请求获取要修改的数据展示到页面
+        $.ajax({
+            type:"POST",
+            url:"/employee/findUpdateEmployee",
+            success:function (data) {
+                $('#eid').val(data.eid);
+                $('#ename').textbox('setValue',data.ename);
+                if (data.esex==0){
+                    $('#esex1').attr("checked","checked");
+                }else{
+                    $('#esex2').attr("checked","checked");
+                }
+                $('#age').textbox('setValue',data.age);
+                $('#phonenumber').textbox('setValue',data.phonenumber);
+                $('#hireDate').textbox('setValue',data.hireDate);
+                $('#jobnumber').textbox('setValue',data.jobnumber);
+                $.each(data.eroleList,function (i,n) {
+                    $('#cc1').combobox('select', n.rid);
+                })
+
+            }
+        });
+    });
+    function myformatter(date){
+        var y = date.getFullYear();
+        var m = date.getMonth()+1;
+        var d = date.getDate();
+        return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
+    }
+    function myparser(s){
+        if (!s) return new Date();
+        var ss = (s.split('-'));
+        var y = parseInt(ss[0],10);
+        var m = parseInt(ss[1],10);
+        var d = parseInt(ss[2],10);
+        if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+            return new Date(y,m-1,d);
+        } else {
+            return new Date();
+        }
+    }
+
+    function submitForm(){
+        $('#ff').form('submit', {
+            url:"/employee/updateEmployee",
+            success:function(data){
+                var obj = eval("("+data+")");
+                alert(obj.message);
+                if(obj.success){
+                    window.location.href="/employeeList.html";
+                }else{
+                    window.location.reload();
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#ff').form('clear');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>权限列表页面</title>
+    <link rel="stylesheet" type="text/css" href="/css/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/css/demo/demo.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+</head>
+<body>
+<div id="tb">
+    <a href="/addFunction.html" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true">新增</a>
+    功能名称： <input type="text" id="fname">
+    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="SearchFunctionList()">搜索</a>
+    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-cut',plain:true" onclick="BatchDelete()">批量删除</a>
+</div>
+
+<table id="dg"></table>
+
+
+<script>
+
+    /**
+     * 修改功能权限
+     * @constructor
+     */
+    function  UpdateFunction(fid) {
+        $.ajax({
+            url: "/function/getUpdateFunction?fid="+fid,
+            success:function (data) {
+                if (data.success){
+                    window.location.href="/updateFunction.html"
+                }
+            }
+        });
+    }
+
+    $('#dg').datagrid({
+        url:'/function/getFunctionList',
+        columns:[[
+            {field:'fid',title:'功能id',width:100,checkbox:true},
+            {field:'fcode',title:'功能编码',width:100},
+            {field:'fname',title:'功能名称',width:100},
+            {field:'furl',title:'功能链接',width:200},
+            {field:'remark2',title:'父级功能',width:100},
+            {field:'price',title:'操作',width:100,
+                formatter: function(value,row,index){
+                return "<a href=# onclick=UpdateFunction("+row.fid+")>修改</a>\
+                <a href=# onclick=FunctionDetail("+row.fid+")>详情</a>\
+                <a href=# onclick=DeleteFunction("+row.fid+")>删除</a>";
+            }
+            }
+        ]],
+        pagination:true,
+        pageNumber:1,
+        pageSize:5,
+        pageList:[3,5,7],
+        toolbar: '#tb'
+    });
+
+    function SearchFunctionList() {
+        $('#dg').datagrid('load', {
+            fname:$('#fname').val()
+        });
+    }
+
+    /**
+     * 删除
+     * @constructor
+     */
+    function DeleteFunction(fid) {
+        if (confirm("是否确认删除？")) {
+            $.ajax({
+                url: "/function/deleteFunctionByFid?fid="+fid,
+                success:function (data) {
+                    alert(data.message);
+                        window.location.reload();
+                }
+            });
+        }
+
+    }
+
+    /**
+     * 批量删除
+     * @constructor
+     */
+    function BatchDelete() {
+        if (confirm("是否确认批量删除？")){
+            var rows=$('#dg').datagrid('getChecked');
+            var fids="";
+            for (var i=0;i<rows.length;i++){
+                fids+=rows[i].fid+",";
+            }
+            $.ajax({
+                url: "/function/batchDelete?fids="+fids,
+                success:function (data) {
+                    alert(data.message);
+                    window.location.reload();
+                }
+            });
+        }
+
+    }
+</script>
+</body>
+</html>
